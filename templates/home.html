@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% if request.user.is_authenticated %}
+    <h1>Job Search</h1>
+    <form class="my-3 mx-3" action="" method = "POST">
+        {% csrf_token %}
+        <input type="text" name="query" placeholder="job type">
+        <button class="btn btn-sm btn-success" type="submit" value="search">search</button>
+    </form>
+    <hr>
+    <h5> search results for {{ query }}:</h5>
+    <!-- <table class="table table-hover">
+        <thead>
+            <tr>
+            <th>Titles</th>
+            <th>Companies</th>
+            <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for jobs in extracted_info %}
+            {% comment %} {% for job in jobs %} {% endcomment %}
+            {% comment %} <tr>
+            <td>{{ jobs.title }}</td>
+            <td>{{ jobs.company }}</td>
+            <td><a class="btn btn-info" href="{{ jobs.link }}">apply</a></td>
+            </tr> {% endcomment %}
+            {% comment %} {% endfor %} {% endcomment %}
+            {% endfor %}
+        </tbody>
+    </table> -->
+        {% for jobs in extracted_info %}
+        <div class="card my-3 mx-2" style="width:300px;">
+            <div class="card-header">
+                {{ jobs.title }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ jobs.company }}</h5>
+                <p class="card-text">{{ jobs.salary }}</p>
+                <a href="{{ jobs.link }}" class="btn btn-sm btn-primary applyBtn">Apply</a>
+            </div>
+        </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}

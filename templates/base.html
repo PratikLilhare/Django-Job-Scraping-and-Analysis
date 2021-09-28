@@ -1,0 +1,117 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{% static '/css/bootstrap.min.css' %}" >  
+        <link rel="stylesheet" type="text/css" href="{% static '/css/allcss.css' %}" > 
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <title>JobSearch</title>
+        <style>
+            h1{text-align:center;}
+            .applyBtn{float:right;}
+            .card{
+                    display:inline-block;
+                    background:linear-gradient(#ffffff, #ffffff, #ffffff);
+                    border-radius: 20px;
+                    text-align: left;
+                    max-width: 500px;
+                    max-height: 250px;
+                    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                    }
+            .right{
+                float: right;
+            }
+ 
+            
+            {% comment %} #bg {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            min-width: 100%;
+            min-height: 100%;
+            } {% endcomment %}
+        </style>
+    </head>
+
+    <body>
+        {% comment %} <img src="{% static '/img/background.jpg' %}" id="bg" alt=""> {% endcomment %}
+
+        
+        
+        {% comment %} <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/home/">Home </a>
+                    </li>
+                
+                </ul>
+                
+            </div>
+                <ul class="right">
+                    {% if not request.user.is_authenticated %}
+                        <li class="nav-item btn btn-sm btn-success">
+                            <a class="nav-link text-white" href="/login/">Login</a>
+                        </li>
+                        <li class="nav-item btn btn-sm btn-info">
+                            <a class="nav-link text-white" href="/register/">Register</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item btn btn-sm btn-danger button">
+                            <a class="nav-link text-white" href="/logout/">Logout</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav> {% endcomment %}
+            <!-- ***** Header Area Start ***** -->
+                <header class="header-area header-sticky background-header">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12">
+                                <nav class="main-nav  ">
+                                    <!-- ***** Logo Start ***** -->
+                                    <a href="index.html" class="logo">Job<em> Search</em></a>
+                                    <!-- ***** Logo End ***** -->
+                                    <!-- ***** Menu Start ***** -->
+                                    <ul class="nav">
+                                        <li class="scroll-to-section"><a href="/home/" class="active">Home</a></li>
+                                        <li class="scroll-to-section"><a href="#features">About</a></li>
+                                        <li class="scroll-to-section">
+                                            <a class="text-white btn btn-sm btn-success" href="/login/">Login</a>
+                                        </li> 
+                                        <li class="scroll-to-section">
+                                            <a class="text-white btn btn-sm btn-danger" href="/register/">Sign Up</a>
+                                        </li>
+                                    </ul>        
+                                    <a class='menu-trigger'>
+                                        <span>Menu</span>
+                                    </a>
+                                    <!-- ***** Menu End ***** -->
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+            <!-- ***** Header Area End ***** -->
+        <div  class="my-3 mx-5">
+        {% block content %}
+
+        {% endblock %}
+        </div>
+        
+        <script>
+
+        document.getElementById("li").onclick = function(){
+            this.class = "nav-item active"
+        }
+        
+        </script>
+    </body>
+</html>
