@@ -1,47 +1,124 @@
 {% extends 'base.html' %}
 
+{% block jobsnavclass %}active{% endblock %}
+
 {% block content %}
 
     {% if request.user.is_authenticated %}
     <h1>Job Search</h1>
-    <form class="my-3 mx-3" action="" method = "POST">
+    <form id="searchForm" class="my-3 mx-3" action="" > 
+    
+    <div class="">
+        <a class="btn btn-info analyze" href="/jobs/plot-image/" target="_blank">generate graph</a>
+    </div>
+
+    {% comment %} method = "POST" {% endcomment %}
         {% csrf_token %}
         <input type="text" name="query" placeholder="job type">
         <button class="btn btn-sm btn-success" type="submit" value="search">search</button>
     </form>
     <hr>
-    <h5> search results for {{ query }}:</h5>
-    <!-- <table class="table table-hover">
-        <thead>
-            <tr>
-            <th>Titles</th>
-            <th>Companies</th>
-            <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for jobs in extracted_info %}
-            {% comment %} {% for job in jobs %} {% endcomment %}
-            {% comment %} <tr>
-            <td>{{ jobs.title }}</td>
-            <td>{{ jobs.company }}</td>
-            <td><a class="btn btn-info" href="{{ jobs.link }}">apply</a></td>
-            </tr> {% endcomment %}
-            {% comment %} {% endfor %} {% endcomment %}
-            {% endfor %}
-        </tbody>
-    </table> -->
-        {% for jobs in extracted_info %}
-        <div class="card my-3 mx-2" style="width:300px;">
-            <div class="card-header">
-                {{ jobs.title }}
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">{{ jobs.company }}</h5>
-                <p class="card-text">{{ jobs.salary }}</p>
-                <a href="{{ jobs.link }}" class="btn btn-sm btn-primary applyBtn">Apply</a>
-            </div>
+        <div id="result">
         </div>
-        {% endfor %}
     {% endif %}
+    <div class="loader"></div>
+{% endblock %}
+
+
+{% block javascript %}
+ $(".loader").hide();
+ $(".analyze").hide();
+ 
+$("form#searchForm").submit(function() {
+    var query = $('input[name="query"]').val().trim();
+    $(".loader").show();
+    if(query) {
+        $.ajax({
+            url: "http://127.0.0.1:8000/jobs/",
+            type: "POST",
+            data: {
+                'query': query,
+                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+            dataType: 'json',
+            beforeSend: function() {
+              $("#result").empty();
+              $(".loader").show();
+            },
+            success: function(info) {
+                $(".loader").hide();
+                $(".analyze").show();
+                extracted_info = JSON.stringify(info["extracted_info"]);
+                {% comment %} extracted_info = info.extracted_info {% endcomment %}
+
+                {% comment %} $("html").append(extracted_info); {% endcomment %}
+
+                var data = info.extracted_info
+                console.log(data[0].title)
+                for (let i=0; i<=20; i++){
+                    $('#result').append(
+                    "<div class='card my-3 mx-2' style='width:300px;'>" +
+                     "<div class='card-header'>" +
+                    data[i].title +
+                    "</div>" + 
+                    "<div class='card-body'>" +
+                    "       <h5 class='card-title'>"+ data[i].company+ "</h5>" +
+                    "        <abbr>"+ data[i].salary+ "</abbr>" +
+                    "        <a href=' "+ data[i].link +" ' class='btn btn-sm btn-primary applyBtn'>Apply</a>" +
+                    "</div>" +
+                    "</div>"
+                    )
+
+                };
+
+                {% comment %} $("html").append(`
+                 {% for jobs in extracted_info %}
+                    <div class="card my-3 mx-2" style="width:300px;">
+                        <div class="card-header">
+                            {{ jobs.title }}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ jobs.company }}</h5>
+                            <abbr>{{ jobs.salary }}</abbr>
+                            <a href="{{ jobs.link }}" class="btn btn-sm btn-primary applyBtn">Apply</a>
+                        </div>
+                    </div>
+                {% endfor %}
+                `); {% endcomment %}
+                
+            }
+        });
+    }
+    else {
+        alert("All fields must have a valid value.");
+    }
+    $('form#addUser').trigger("reset");
+    return false;
+})
+
+{% endblock %}
+
+{% block style %}
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  position:absolute;
+  margin-top:0.7%;
+  margin-left:43%;
+}
+
+.analysis{
+    position:absolute;
+    margin-right: 0%;
+
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 {% endblock %}

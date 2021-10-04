@@ -5,6 +5,12 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect
 from django.contrib.auth import logout
 
+def about(request):
+    return render(request, 'about.html')
+
+
+def get_started(request):
+    return render(request, 'getStarted.html')
 
 def user_login(request):
     if request.method == "POST":
@@ -31,6 +37,7 @@ def register(request):
             user.save()
 
             return redirect('/login/')
+    
 
     return render(request, "register.html")
 

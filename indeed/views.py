@@ -10,40 +10,92 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
+from django.http import JsonResponse
 
+import io
+from django.core.files.images import ImageFile
+from .models import Plot
+from django.http import FileResponse
+from django.shortcuts import get_object_or_404
 
 
 def show(request):
-    job_list = find_jobs_from("Indeed", "software", "india", ["titles", "links"], filename="results.xls")
+    plot = get_object_or_404(Plot, user_id=request.user.id)
+    if plot.figure:
+        plot.figure.delete()
+    # if plot:
+    #     plot.delete()
+
     if request.method == "POST":
-        print(request.POST["query"])
         job_title = request.POST["query"]
-        job_list = find_jobs_from("Indeed", job_title, "india", ["titles"], filename="results.xls")
-        job_list["query"] = request.POST["query"]
-    return render(request, "home.html", job_list)
+        job_list = find_jobs_from(request, "Indeed", job_title, "india", ["titles"], filename="results.csv")
+        job_list["query"] = job_title
+        return JsonResponse(job_list) #render(request, "home.html", job_list)
+    
+    return render(request, "home.html")
 
 
-def find_jobs_from(website, job_title, location, desired_characs, filename="results.xls"):
+def plot_image(request):
+    img = open('media/figures/'+request.user.username+'.png', 'rb')
+
+    response = FileResponse(img)
+
+    return response
+
+
+def find_jobs_from(request, website, job_title, location, desired_characs, filename="results.xls"):
     
-    if website == 'Indeed':
-        job_soup = load_indeed_jobs_div(job_title, location)
-        jobs_list, num_listings = extract_job_information_indeed(job_soup, desired_characs)
+    while(True):
+        if website == 'Indeed':
+            job_soup = load_indeed_jobs_div(job_title, location)
+            jobs_list, num_listings, nums = extract_job_information_indeed(job_soup, desired_characs)
+
+            if nums !=0:
+                break
     
     
-    save_jobs_to_excel(jobs_list, filename)
-    
-    print('{} new job postings retrieved from {}. Stored in {}.'.format(num_listings, 
-                                                                        website, filename))
+    save_jobs_to_excel(request, num_listings, filename)
+
     return jobs_list
     
 
 
+def save_jobs_to_excel(request, jobs_list, filename):
+    df = pd.DataFrame(jobs_list)
 
-def save_jobs_to_excel(jobs_list, filename):
-    jobs = pd.DataFrame(jobs_list)
-    jobs.to_excel(filename)
+    
 
+    # time = df['salaries'].str.split(expand = True)
+    df["time"][df["time"] == "month"] = 1
+    df["time"][df["time"] == "year"] = 12
+    df["time"][df["time"] == "hour"] = 1/30 * 1/24
+    df["time"][df["time"] == "week"] = 1/4
+    df['salaries']= df['salaries'].astype(str).str.replace('₹','').str.replace(',','')
+    
+    df["salaries"] = df["salaries"].apply (pd.to_numeric, errors='coerce')
+    df = df.dropna(axis=0, how='any')
+    for i in df["salaries"]:
+        print(i)
 
+    df["salary"] = df["salaries"].astype(float)/df["time"].astype(float)
+    df.drop(columns= ["salaries", "time"], inplace =True)
+
+    salary_df = pd.DataFrame({'company':df["company"], 'salary':df["salary"]})
+    ax = salary_df.plot(x='company', y='salary', kind='barh', figsize=(20, 10))
+
+    # ax.figure.savefig("results.jpg")
+
+    # response = HttpResponse(content_type='image/png')
+
+    # ax.figure.savefig(response)
+
+    figure = io.BytesIO()
+    ax.figure.savefig(figure, format="png")
+    content_file = ImageFile(figure)
+
+    plot_instance = Plot(user=request.user)
+    plot_instance.figure.save(str(request.user.username)+'.png', content_file)
+    plot_instance.save()
 
 
 def load_indeed_jobs_div(job_title, location):
@@ -55,20 +107,40 @@ def load_indeed_jobs_div(job_title, location):
     return job_soup
 
 def extract_job_information_indeed(job_soup, desired_characs):
+
     job_elems = job_soup.find_all('div', class_='jobsearch-SerpJobCard')
-     
-    cols = []
-    extracted_info = []
     
+    cols = []
+    titles, salaries,companies, time = [], [], [], []
+    extracted_info = []
+    tabular_info = []
+    
+    cols = ['titles','salaries','company','time']
+
     for job_elem in job_elems:
         row = {}
-        row["title"] = extract_job_title_indeed(job_elem)
+        row["title"] = extract_job_title_indeed(job_elem)[:20]
         row["link"] = extract_link_indeed(job_elem)
-        row["company"] = extract_company_indeed(job_elem)
+        row["company"] = extract_company_indeed(job_elem)[0:12]
         row["salary"] = extract_salary_indeed(job_elem)
+
+        
+        
+        titles.append(row["title"])
+        salaries.append(row["salary"].split()[0])
+        time.append(row["salary"].split()[-1])
+        companies.append(row["company"])
+
+        
 
         extracted_info.append(row)
     
+    tabular_info.append(titles)
+    tabular_info.append(salaries)
+    tabular_info.append(companies)
+    tabular_info.append(time)
+
+    print(len(tabular_info[0]))
     # if 'titles' in desired_characs:
     #     titles = []
     #     cols.append('titles')
@@ -106,14 +178,14 @@ def extract_job_information_indeed(job_soup, desired_characs):
     #     i += 1
     
     
+    jobs_table = {}
+    for j in range(len(cols)):
+        jobs_table[cols[j]] = tabular_info[j]
     
-    # for j in range(len(cols)):
-    #     jobs_list[cols[j]] = extracted_info[j]
     
-    # jobs_list = zip(jobs_list["titles"], jobs_list["links"])
     num_listings = 0#len(extracted_info[0])
     
-    return jobs_list, num_listings
+    return jobs_list, jobs_table, len(tabular_info[0])
 
 
 def extract_job_title_indeed(job_elem):

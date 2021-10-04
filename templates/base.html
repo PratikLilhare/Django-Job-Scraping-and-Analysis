@@ -16,8 +16,8 @@
                     background:linear-gradient(#ffffff, #ffffff, #ffffff);
                     border-radius: 20px;
                     text-align: left;
-                    max-width: 500px;
-                    max-height: 250px;
+                    min-width: 300px;
+                    min-height: 250px;
                     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
                     }
             .right{
@@ -32,7 +32,10 @@
             min-width: 100%;
             min-height: 100%;
             } {% endcomment %}
+            {% block style %}
+            {% endblock %}
         </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     </head>
 
     <body>
@@ -71,7 +74,7 @@
                 </ul>
             </nav> {% endcomment %}
             <!-- ***** Header Area Start ***** -->
-                <header class="header-area header-sticky background-header">
+                <header class="header-area header-sticky background-header" id="navbar">
                     <div class="container">
                         <div class="row">
                             <div class="col-12">
@@ -81,14 +84,21 @@
                                     <!-- ***** Logo End ***** -->
                                     <!-- ***** Menu Start ***** -->
                                     <ul class="nav">
-                                        <li class="scroll-to-section"><a href="/home/" class="active">Home</a></li>
+                                        <li class="scroll-to-section"><a href="/home/" class="{% block homenavclass %}{% endblock %}">Home</a></li>
                                         <li class="scroll-to-section"><a href="#features">About</a></li>
-                                        <li class="scroll-to-section">
-                                            <a class="text-white btn btn-sm btn-success" href="/login/">Login</a>
-                                        </li> 
-                                        <li class="scroll-to-section">
-                                            <a class="text-white btn btn-sm btn-danger" href="/register/">Sign Up</a>
-                                        </li>
+                                        {% if not request.user.is_authenticated %}
+                                            <li class="scroll-to-section">
+                                                <a class="" href="/login/">Login</a>
+                                            </li> 
+                                            <li class="scroll-to-section">
+                                                <a class="" href="/register/">Sign Up</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="scroll-to-section"><a href="/jobs/" class="{% block jobsnavclass %}{% endblock %}">Jobs</a></li>
+                                            <li class="scroll-to-section">
+                                                <a class="nav-link text-white" href="/logout/">Logout</a>
+                                            </li>
+                                        {% endif %}
                                     </ul>        
                                     <a class='menu-trigger'>
                                         <span>Menu</span>
@@ -107,10 +117,13 @@
         </div>
         
         <script>
+        {% block javascript %}
+        {% endblock %}
 
         document.getElementById("li").onclick = function(){
             this.class = "nav-item active"
         }
+
         
         </script>
     </body>
