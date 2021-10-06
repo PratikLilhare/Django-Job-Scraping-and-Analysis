@@ -710,7 +710,7 @@ subscribe
 
 #call-to-action {
   padding: 120px 0px;
-  /* background-image: url(../images/cta-bg.jpg); */
+  background-image: url("{% static 'images/cta-bg.jpg' %}"); 
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -840,7 +840,7 @@ schedule
 
 #schedule {
   padding: 0px 0px 140px 0px;
-  /* background-image: url(../images/schedule-bg.jpg); */
+  background-image: url("{% static 'images/schedule-bg.jpg' %}"); 
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -1010,7 +1010,7 @@ contact
 
 #contact-us .contact-form {
   padding: 80px;
-  /* background-image: url(../images/contact-bg.jpg); */
+  background-image: url("{% static 'images/contact-bg.jpg' %}"); 
   background-position: center center;
   background-repeat: no-repeat;
   background-size: cover;
