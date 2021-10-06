@@ -58,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'jobSearch.urls'
@@ -180,7 +181,7 @@ DATABASES['default'].update(db_from_env)
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 import os
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', "cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5!asj6yjpkag")
