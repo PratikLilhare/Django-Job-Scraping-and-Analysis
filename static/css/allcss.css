@@ -4,7 +4,6 @@ body{
 }
 
 html {
-  /* background: url("{% static '/img/background.jpg' %}"); */
   height: 100%;
   background-position: center;
   background-repeat: no-repeat;
