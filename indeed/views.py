@@ -20,9 +20,10 @@ from django.shortcuts import get_object_or_404
 
 
 def show(request):
-    plot = get_object_or_404(Plot, user_id=request.user.id)
-    if plot.figure:
-        plot.figure.delete()
+    plot = Plot.objects.filter(user_id=request.user.id)
+    if plot:
+        if plot[0].figure:
+            plot[0].figure.delete()
     # if plot:
     #     plot.delete()
 

@@ -87,12 +87,8 @@ WSGI_APPLICATION = 'jobSearch.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'MajorProject',
-        'USER': 'postgres',
-        'PASSWORD': '1234',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME':  BASE_DIR / 'db.sqlite3'
     }
 }
 
@@ -159,7 +155,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-SITE_ID = 1
+SITE_ID = 2
 
 LOGIN_REDIRECT_URL = '/jobs/'
 LOGOUT_REDIRECT_URL = '/home/'
@@ -167,8 +163,8 @@ LOGOUT_REDIRECT_URL = '/home/'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-SOCIAL_AUTH_GOOGLE_OAUTH_KEY = 'AIzaSyAIG2ZlYrNXEU6b2PsD4z6cl1PXqjra_Bs'
-SOCIAL_AUTH_GOOGLE_OAUTH_SECRET = 'j7RhsU0nzXERldvharGOj2v7'
+GOOGLE_AUTH_OAUTH2_KEY='438272138577-6dd4cct9pka9ahmfakn9evokf5fpklp5.apps.googleusercontent.com'
+GOOGLE_AUTH_OAUTH2_SECRET='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'
 
 MEDIA_ROOT =  os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
