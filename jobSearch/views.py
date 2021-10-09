@@ -30,7 +30,7 @@ def register(request):
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
-        password = request.POST["password"]
+        password = request.POST["pass"]
 
         user = User.objects.create_user(username, email, password)
         if user is not None:
