@@ -102,6 +102,7 @@ def save_jobs_to_excel(request, jobs_list, filename):
 def load_indeed_jobs_div(job_title, location):
     getVars = {'q' : job_title, 'l' : location, 'fromage' : 'last', 'sort' : 'date'}
     url = ('https://in.indeed.com/jobs?' + urllib.parse.urlencode(getVars))
+    print(url)
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "html.parser")
     job_soup = soup.find(id="resultsCol")
@@ -109,7 +110,8 @@ def load_indeed_jobs_div(job_title, location):
 
 def extract_job_information_indeed(job_soup, desired_characs):
 
-    job_elems = job_soup.find_all('div', class_='jobsearch-SerpJobCard')
+    # job_elems = job_soup.find_all('div', class_='jobsearch-SerpJobCard')
+    job_elems = job_soup.find_all("a", id=lambda value: value and value.startswith("job_"))
     
     cols = []
     titles, salaries,companies, time = [], [], [], []
@@ -190,12 +192,12 @@ def extract_job_information_indeed(job_soup, desired_characs):
 
 
 def extract_job_title_indeed(job_elem):
-    title_elem = job_elem.find('h2', class_='title')
+    title_elem = job_elem.find('h2', class_='jobTitle')
     title = title_elem.text.strip()
     return title
 
 def extract_company_indeed(job_elem):
-    company_elem = job_elem.find('span', class_='company')
+    company_elem = job_elem.find('span', class_='companyName')
     company = company_elem.text.strip()
     return company
 
@@ -210,7 +212,7 @@ def extract_date_indeed(job_elem):
     return date
 
 def extract_salary_indeed(job_elem):
-    salary_elem = job_elem.find('span', class_='salaryText')
+    salary_elem = job_elem.find('span', class_='salary-snippet')
     if salary_elem is None:
         salary = "NA"
     else:
