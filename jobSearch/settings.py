@@ -87,8 +87,12 @@ WSGI_APPLICATION = 'jobSearch.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME':  BASE_DIR / 'db.sqlite3'
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'd6g4pacn065vm5',
+        'USER': 'uxiidslzqtoblh',
+        'PASSWORD': '106b482f77265bf83654514892eb643e0246bed14fa6bdba395382cc5c3eaf3b',
+        'HOST': 'ec2-44-199-26-122.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
@@ -155,7 +159,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-SITE_ID = 1
+SITE_ID = 2
 
 LOGIN_REDIRECT_URL = '/jobs/'
 LOGOUT_REDIRECT_URL = '/home/'
