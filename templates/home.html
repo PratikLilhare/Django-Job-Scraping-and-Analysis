@@ -9,10 +9,8 @@
     <form id="searchForm" class="my-3 mx-3" action="" > 
     
     <div class="">
-        <a class="btn btn-info analyze" href="/jobs/plot-image/" target="_blank">generate graph</a>
+        <a class="btn btn-info analyze disabled" href="/jobs/plot-image/" target="_blank">generate graph</a>
     </div>
-
-    {% comment %} method = "POST" {% endcomment %}
         {% csrf_token %}
         <input type="text" name="query" placeholder="job type">
         <button class="btn btn-sm btn-success" type="submit" value="search">search</button>

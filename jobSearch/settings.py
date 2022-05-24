@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +27,7 @@ STATIC_DIR = os.path.join(BASE_DIR, 'static')
 SECRET_KEY = 'django-insecure-up=jb=)glwgb9z$t^27b2l+!1mz779nzg&0mf0!y6@meu+((!*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['vast-everglades-74341.herokuapp.com', '127.0.0.1']
 
@@ -87,12 +89,8 @@ WSGI_APPLICATION = 'jobSearch.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'd6g4pacn065vm5',
-        'USER': 'uxiidslzqtoblh',
-        'PASSWORD': '106b482f77265bf83654514892eb643e0246bed14fa6bdba395382cc5c3eaf3b',
-        'HOST': 'ec2-44-199-26-122.compute-1.amazonaws.com',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME':  BASE_DIR / 'db.sqlite3'
     }
 }
 
@@ -175,7 +173,6 @@ MEDIA_URL = '/media/'
 
 
 # Heroku: Update database configuration from $DATABASE_URL.
-import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(db_from_env)
 
